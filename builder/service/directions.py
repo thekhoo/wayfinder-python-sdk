@@ -1,9 +1,12 @@
 from typing import List, Union
 from datetime import datetime
+from core.logger import get_logger
 from constants.transports import TransportType
 from data.directions import get_directions_by_transport_type_and_place_id
 from data.types import AddressResponse, DirectionsResponse, PlacesNearby, Step
 from utils.directions import get_datetime_from_str
+
+logger = get_logger(__name__)
 
 def get_directions_for_multiple_places(
     origin: AddressResponse,
@@ -14,6 +17,7 @@ def get_directions_for_multiple_places(
 ):
     origin_address = origin.formatted_address
 
+    logger.info("Converting time string to datetime object")
     departure_time = get_datetime_from_str(departure_time_str) if departure_time_str is not None else None
     arrival_time = get_datetime_from_str(arrival_time_str) if arrival_time_str is not None else None
 
@@ -41,6 +45,7 @@ def _get_directions_for_place(
 ):
     destination_name : str = destination.name
 
+    logger.info(f"Getting directions by transport types: {[transport.value for transport in transport_types]}")
     direction_by_transport_type : list[dict[TransportType, DirectionsResponse]] = list(
         map(
             lambda transport_type : _get_directions_for_place_by_transport(
@@ -63,7 +68,7 @@ def _get_transit_detail_from_step(
     additional_data = {}
 
     if step.transport_type == TransportType.Transit and step.transit_details is not None:
-
+        logger.info("Getting additional step data for transit transport type")
         transit_details = step.transit_details
 
         additional_data.update({
@@ -103,6 +108,7 @@ def _get_directions_for_place_by_transport(
     
     additional_details = {}
     
+    logger.info(f"Getting directions to [destination_id: {destination_id}] using transport type '{transport_type.value}'")
     directions : DirectionsResponse = get_directions_by_transport_type_and_place_id(
                                             origin=origin_address,
                                             destination_id=destination_id,

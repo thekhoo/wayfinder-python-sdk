@@ -1,8 +1,11 @@
 from datetime import datetime
 from googlemaps import directions
 from constants.transports import TransitMode, TransportType
+from core.logger import get_logger
 from core.googlemaps import get_googlemaps_client
 from data.types import DirectionsResponse
+
+logger = get_logger(__name__)
 
 def get_directions_by_transport_type(
     origin: str,
@@ -21,6 +24,9 @@ def get_directions_by_transport_type(
     if departure_time and arrival_time:
         raise Exception("Cannot specify both departure and arrival time")
     
+    logger.info(f"Getting Google Maps API Response for Directions from {origin} to {destination} using {transport_type.value}")
+    if departure_time: logger.info(f"Departure datetime set at {departure_time}")
+    if arrival_time: logger.info(f"Arrival datetime set at {arrival_time}")
     return DirectionsResponse(
         directions.directions(
             gmaps_client,
@@ -50,6 +56,10 @@ def get_directions_by_transport_type_and_place_id(
     
     if departure_time and arrival_time:
         raise Exception("Cannot specify both departure and arrival time")
+    
+    logger.info(f"Getting Google Maps API Response for Directions from {origin} to place_id:{destination_id} using {transport_type.value}")
+    if departure_time: logger.info(f"Departure datetime set at {departure_time}")
+    if arrival_time: logger.info(f"Arrival datetime set at {arrival_time}")
     
     return DirectionsResponse(
         directions.directions(
