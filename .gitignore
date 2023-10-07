@@ -1,0 +1,13 @@
+# Environment Variable
+.env
+
+# Folders to ignore
+logs
+venv
+
+# PyCache
+*/__pycache__
+*/*/__pycache__
+
+# OS Related
+.DS_Store
