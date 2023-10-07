@@ -18,6 +18,12 @@ GOOGLE_MAPS_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXX"
 
 You can create a google maps API key [here](https://developers.google.com/maps/documentation/javascript/get-api-key).
 
+In the CLI, run the following command to install the python modules required to use this app.
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Running the SDK
 
 The entry point for this SDK is in `builder/app.py`. Before running the SDK, you must set up the `SearchConfig` within `app.py` so the SDK knows what to search for.
@@ -81,6 +87,8 @@ In order of priority... ish
 * Use an actual `.config` file instead of this half-ass config class object
 
 * Introduce logging to the SDK to get a better idea of what's going on when and where it is in the execution callstack
+
+* testtesttesttesttesttesttesttest
 
 * Allowing users to specify the transit types when `TransportType.Transit` is selected (i.e. rail, tram, bus etc...)
 
