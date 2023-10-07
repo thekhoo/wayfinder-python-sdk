@@ -1,21 +1,30 @@
 from typing import List, Union
+from datetime import datetime
 from constants.transports import TransportType
 from data.directions import get_directions_by_transport_type_and_place_id
 from data.types import AddressResponse, DirectionsResponse, PlacesNearby, Step
+from utils.directions import get_datetime_from_str
 
 def get_directions_for_multiple_places(
     origin: AddressResponse,
     destinations: Union[List[PlacesNearby],List[AddressResponse]],
-    transport_types: List[TransportType]
+    transport_types: List[TransportType],
+    departure_time_str:str=None,
+    arrival_time_str:str=None
 ):
     origin_address = origin.formatted_address
+
+    departure_time = get_datetime_from_str(departure_time_str) if departure_time_str is not None else None
+    arrival_time = get_datetime_from_str(arrival_time_str) if arrival_time_str is not None else None
 
     directions = list(
         map(
             lambda destination : _get_directions_for_place(
                 origin_address,
                 destination,
-                transport_types
+                transport_types,
+                departure_time,
+                arrival_time
             ),
             destinations
         )
@@ -26,7 +35,9 @@ def get_directions_for_multiple_places(
 def _get_directions_for_place(
     origin_address: str,
     destination: Union[PlacesNearby, AddressResponse],
-    transport_types: List[TransportType]
+    transport_types: List[TransportType],
+    departure_time:datetime=None,
+    arrival_time:datetime=None
 ):
     destination_name : str = destination.name
 
@@ -35,7 +46,9 @@ def _get_directions_for_place(
             lambda transport_type : _get_directions_for_place_by_transport(
                 origin_address,
                 destination.place_id,
-                transport_type
+                transport_type,
+                departure_time,
+                arrival_time
             ),
             transport_types
         )
@@ -83,7 +96,9 @@ def _get_transit_detail_from_step(
 def _get_directions_for_place_by_transport(
     origin_address: str,
     destination_id: str,
-    transport_type: TransportType
+    transport_type: TransportType,
+    departure_time:datetime=None,
+    arrival_time:datetime=None
 ) -> DirectionsResponse:
     
     additional_details = {}
@@ -91,7 +106,9 @@ def _get_directions_for_place_by_transport(
     directions : DirectionsResponse = get_directions_by_transport_type_and_place_id(
                                             origin=origin_address,
                                             destination_id=destination_id,
-                                            transport_type=transport_type
+                                            transport_type=transport_type,
+                                            departure_time=departure_time,
+                                            arrival_time=arrival_time
                                         )
 
     if transport_type == TransportType.Transit:
