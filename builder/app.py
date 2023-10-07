@@ -21,7 +21,8 @@ config : SearchConfig = SearchConfig(
                 TransportType.Bicycling,
                 TransportType.Transit,
             ],
-            limit=2
+            limit=2,
+            departure_time_str="07:00:00" # Must be in 24-hour format (i.e. "11:59:59")
         )
     ] 
 )
