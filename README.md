@@ -36,17 +36,19 @@ config : SearchConfig = SearchConfig(
     points_of_interest=[
         POIConfig(
             poi_name_or_address="Borough Market",
-            transport_modes=[TransportType.Transit]
+            transport_modes=[TransportType.Transit],
+            departure_time_str="07:00:00"  # Must be in 24-hour format (i.e. "11:59:59")
         )
     ],
     search_locations=[
         LocationConfig(
-            place_type=PlaceType.TrainStation,
+            place_type=PlaceType.Supermarket,
             transport_modes=[
-                TransportType.Walking,
-                TransportType.Bicycling
+                TransportType.Bicycling,
+                TransportType.Transit,
             ],
-            limit=2
+            limit=2,
+            departure_time_str="07:00:00" # Must be in 24-hour format (i.e. "11:59:59")
         )
     ] 
 )
@@ -68,6 +70,10 @@ config : SearchConfig = SearchConfig(
 
     * `limit` limits the number of results to return
 
+* `departure_time_str` and `arrival_time_str` are **optional parameters** that, when used, must be in the format "HH:MM:SS". The date defaults to the next day.
+
+    * _Example: If today is `15/10/2023` and the time is set to `"11:32:00"`, the datetime used for directions will be `"16/10/2023 11:32:00"`_
+
 Make sure the following imports are in `app.py` when building the config:
 
 ```py
@@ -80,9 +86,9 @@ from constants.transports import TransportType
 
 In order of priority... ish
 
-* Allowing users to specify the departure or arrival time (Not both... google maps is not a God)
-
 * Format the results in a nicer way? (Maybe add functions to return the data in specific formats?)
+
+    * Update 7/10/2023 - It now returns a JSON string so you can use a [JSON Beautifier](https://codebeautify.org/jsonviewer)
 
 * Use an actual `.config` file instead of this half-ass config class object
 
