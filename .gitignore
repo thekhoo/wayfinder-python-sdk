@@ -2,6 +2,7 @@
 .env
 
 # Folders to ignore
+.pytest_cache
 logs
 venv
 

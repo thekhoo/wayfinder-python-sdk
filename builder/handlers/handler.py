@@ -1,3 +1,4 @@
+import json
 from typing import List
 from handlers.config import SearchConfig, LocationConfig, POIConfig
 from constants.places import PlaceType
@@ -13,17 +14,22 @@ def handler(
     start_address_obj = get_address_object_from_str(config.start_address)
 
     # # Get the directions to point of interests
-    poi_directions_dict = {}
-    for poi in config.points_of_interest:
-        directions = get_directions_for_multiple_places(
-            origin=start_address_obj,
-            destinations= [get_address_object_from_str(poi.poi_name_or_address)],
-            transport_types=poi.transport_modes
+    poi_directions_list = list(
+        map(
+            lambda poi : get_directions_for_multiple_places(
+                origin=start_address_obj,
+                destinations= [get_address_object_from_str(poi.poi_name_or_address)],
+                transport_types=poi.transport_modes,
+                departure_time_str=poi.departure_time_str,
+                arrival_time_str=poi.arrival_time_str
+            )[0], # Should only have one place
+            config.points_of_interest
         )
+    )
 
-        poi_directions_dict.update({
-            poi.poi_name_or_address: directions
-        })
+    poi_directions_dict = {
+        "places_of_interest": poi_directions_list
+    }
 
     # Get the directions to other search locations specified
     search_location_directions_dict : dict = {}
@@ -33,55 +39,23 @@ def handler(
         nearby_places = get_nearby_places_by_place_type_and_limit(
             origin=start_address_obj,
             place_type=search_location.place_type,
-            limit=search_location.limit
+            limit=search_location.limit,
         )
 
         # Get the directions to these nearby places
         directions_to_places_nearby = get_directions_for_multiple_places(
             origin=start_address_obj,
             destinations=nearby_places,
-            transport_types=search_location.transport_modes
+            transport_types=search_location.transport_modes,
+            departure_time_str=search_location.departure_time_str,
+            arrival_time_str=search_location.arrival_time_str
         )
 
         search_location_directions_dict.update({
             search_location.place_type.value: directions_to_places_nearby
         })
 
-    return {
+    return json.dumps({
         **poi_directions_dict,
         **search_location_directions_dict
-    }
-
-if __name__ == '__main__':
-    config : SearchConfig = SearchConfig(
-        start_address="Flat 3, 38-40 Crown Street, Reading RG1 2SE",
-        points_of_interest=[
-            POIConfig(
-                poi_name_or_address="Aurora Energy Research",
-                transport_modes=[TransportType.Transit]
-            ),
-            POIConfig(
-                poi_name_or_address="Sweco Maidenhead",
-                transport_modes=[TransportType.Transit]
-            )
-        ],
-        search_locations=[
-            LocationConfig(
-                place_type=PlaceType.Supermarket,
-                transport_modes=[
-                    TransportType.Bicycling,
-                    TransportType.Transit,
-                ]
-            ),
-            LocationConfig(
-                place_type=PlaceType.TrainStation,
-                transport_modes=[
-                    TransportType.Walking,
-                    TransportType.Bicycling
-                ],
-                limit=2
-            )
-        ] 
-    )
-
-    result = handler(config)
+    })

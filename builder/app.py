@@ -1,3 +1,4 @@
+from datetime import datetime
 from handlers.handler import handler
 from handlers.config import SearchConfig, LocationConfig, POIConfig
 from constants.places import PlaceType
@@ -8,8 +9,9 @@ config : SearchConfig = SearchConfig(
     start_address="XXXXXXXXXXXXXXXXX",
     points_of_interest=[
         POIConfig(
-            poi_name_or_address="XXXXXXXXXXXXXXXX",
-            transport_modes=[TransportType.Transit]
+            poi_name_or_address="XXXXXXXXXXXXXXXXX",
+            transport_modes=[TransportType.Transit],
+            departure_time_str="07:00:00"  # Must be in 24-hour format (i.e. "11:59:59")
         )
     ],
     search_locations=[
@@ -19,10 +21,14 @@ config : SearchConfig = SearchConfig(
                 TransportType.Bicycling,
                 TransportType.Transit,
             ],
-            limit=2
+            limit=2,
+            departure_time_str="07:00:00" # Must be in 24-hour format (i.e. "11:59:59")
         )
     ] 
 )
 
 if __name__ == '__main__':
-    result = handler(config)
+    try:
+        result = handler(config)
+    except Exception as e:
+        print(e)

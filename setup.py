@@ -12,6 +12,7 @@ setup(
         "builder.data",
         "builder.helpers",
         "builder.core",
-        "builder.service"
+        "builder.service",
+        "builder.utils"
     ]
 )
