@@ -7,7 +7,8 @@ class TransitMode(str, Enum):
     Train = "train"
     Tram = "tram"
     Rail = "rail"
-    HeavyRail = "heavy_rail"
+    _HeavyRail = "heavy_rail"
+    _IntercityBus = "intercity_bus"
 
 class TransportType(str,Enum):
     Driving = "driving"
