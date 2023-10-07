@@ -25,4 +25,7 @@ config : SearchConfig = SearchConfig(
 )
 
 if __name__ == '__main__':
-    result = handler(config)
+    try:
+        result = handler(config)
+    except Exception as e:
+        print(e)
